@@ -3,8 +3,28 @@ import { Form, Icon, Input, Button} from 'antd';
 import logo from './logo.png';
 import './index.less';
 const Item = Form.Item;
-export default class Login extends Component{
+class Login extends Component{
+    // 登录点击事件
+    login = (e) => {
+        e.preventDefault();
+    }
+    //自定义校验规则
+    validator = (rule, value, callback) => {
+        const name = rule.fullField === 'username' ? '用户名' : '密码';
+        if (!value) {
+            callback(`必须输入${name}！`);
+        }else if(value.length<4){
+            callback(`${name}必须大于4位`);
+        }else if (value.length > 15) {
+            callback(`${name}必须小于15位`);
+          } else if (!/^[a-zA-Z_0-9]+$/.test(value)) {
+            callback(`${name}只能包含英文字母、数字和下划线`);
+          } else {
+            callback();
+          }
+    }
     render(){
+        const { getFieldDecorator } = this.props.form;
         return (
            <div className="login">
                <header className="login-header">
@@ -13,12 +33,38 @@ export default class Login extends Component{
                </header>
                <section className="login-content">
                    <h2>用户登录</h2>
-                   <Form className="login-form">
+                   <Form className="login-form" onSubmit={this.logon}>
                        <Item>
-                           <Input className="login-input" prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="用户名"/>
+                          {
+                            getFieldDecorator(
+                                'username',
+                                {
+                                    rules:[
+                                        {
+                                            validator:this.validator
+                                        }
+                                    ]
+                                }
+                            )(
+                                <Input className="login-input" prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="用户名"/>
+                            )   
+                          } 
                        </Item>
                        <Item>
-                           <Input className="login-input" prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="密码"/>
+                       {
+                            getFieldDecorator(
+                                'password',
+                                {
+                                    rules:[
+                                        {
+                                            validator:this.validator
+                                        }
+                                    ]
+                                }
+                            )(
+                                <Input className="login-input" prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="密码"/>
+                            )   
+                          } 
                        </Item>
                        <Item>
                            <Button type="primary" htmlType="submit" className="login-btn">登录</Button>
@@ -30,3 +76,4 @@ export default class Login extends Component{
         
     }
 }
+export default Form.create()(Login);
