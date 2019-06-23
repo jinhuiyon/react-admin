@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Form, Icon, Input, Button, message } from "antd";
 import axios from 'axios'
-import logo from "./logo.png";
+import logo from "../../assets/img/logo.png";
 import "./index.less";
 const Item = Form.Item;
 class Login extends Component {
@@ -87,6 +87,7 @@ class Login extends Component {
                     <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
                   }
                   placeholder="密码"
+                  type="password"
                 />
               )}
             </Item>
