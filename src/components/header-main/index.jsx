@@ -8,7 +8,7 @@ export default class HeaderMain extends Component {
     return (
       <div>
         <div className="header-main-top">
-          <span>欢迎, admin</span>
+          <span>欢迎, xxx</span>
           <MyButton>退出</MyButton>
         </div>
         <div className="header-main-bottom">

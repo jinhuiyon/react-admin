@@ -1,5 +1,5 @@
 import React from 'react';
-
-export default function MyButton(){
-    return <button className='my-buttom'>退出</button>
+import './index.less';
+export default function MyButton(props){
+    return <button className='my-buttom' {...props}/>
 }
