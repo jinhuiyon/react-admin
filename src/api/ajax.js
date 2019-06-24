@@ -9,8 +9,7 @@ export default function ajax(url, data, method) {
       params:data
     }
   }
-  return axios
-    .[method](url, reqPs)
+  return axios[method](url, reqPs)
     .then(res => {
       const { data } = res;
       if (data.status === 0) {
