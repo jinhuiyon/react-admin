@@ -4,8 +4,9 @@ import { withRouter } from 'react-router-dom';
 import { Modal } from 'antd';
 import { getItem, removeItem } from '../../utils/storage-tools';
 import { reqWeather } from '../../api/indxe'
-import "./index.less";
+import menuList from '../../config/menu-config'
 import dayjs from "dayjs";
+import "./index.less";
 
 const { confirm } = Modal;
 class HeaderMain extends Component {
@@ -16,6 +17,7 @@ class HeaderMain extends Component {
   }
   componentWillMount () {
     this.username = getItem().username;
+    this.title = this.getTitle(this.props);
   }
 
   async componentDidMount () {
@@ -30,6 +32,10 @@ class HeaderMain extends Component {
       this.setState(result);
     }
   }
+
+  componentWillReceiveProps(nextProps) {
+    this.title = this.getTitle(nextProps);
+  }
   // 点击登出
   logout = () => {
     confirm({
@@ -42,6 +48,26 @@ class HeaderMain extends Component {
       }
     });
   }
+  // 获取 title
+  getTitle = (nextProps) => {
+    console.log('getTitle()');
+    const { pathname } = nextProps.location;
+    for (let i=0; i<menuList.length; i++) {
+      const menu = menuList[i];
+      if (menu.children) {
+        for (let j=0; j<menu.children.length; j++) {
+          const item = menu.children[j];
+          if ( item.key === pathname) {
+            return item.title;
+          }
+        }
+      } else {
+        if (menu.key === pathname) {
+          return menu.title;
+        }
+      }
+    }
+  }
   render() {
     const { sysTime, weather, weatherImg } = this.state;
     return (
@@ -51,7 +77,7 @@ class HeaderMain extends Component {
           <MyButton onClick={this.logout}>退出</MyButton>
         </div>
         <div className="header-main-bottom">
-          <span className="header-main-left">用户管理</span>
+          <span className="header-main-left">{this.title}</span>
           <div className="header-main-right">
             <span>{dayjs(sysTime).format('YYYY-MM-DD HH:mm:ss')}</span>
             <img src={weatherImg} alt="" />
