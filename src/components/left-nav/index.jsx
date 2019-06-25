@@ -25,6 +25,7 @@ class LeftNav extends Component {
   // render前只做一次
   componentWillMount() {
     const { pathname } = this.props.location;
+    let isHome = true;
     this.menus = menuList.map(menu => {
       const children = menu.children;
       if (children) {
@@ -41,16 +42,18 @@ class LeftNav extends Component {
             {children.map(item => {
               if (item.key === pathname) {
                 this.openKey = menu.key;
+                isHome = false;
               }
               return this.createMenu(item);
             })}
           </SubMenu>
         );
       } else {
+        if (menu.key === pathname) isHome = false;
         return this.createMenu(menu);
       }
     });
-    this.selectedKey = pathname;
+    this.selectedKey = isHome ? '/home' : pathname;
   }
   render() {
     const { collapsed } = this.props;

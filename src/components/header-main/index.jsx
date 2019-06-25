@@ -15,19 +15,22 @@ class HeaderMain extends Component {
     weather:'默认',
     weatherImg:'http://api.map.baidu.com/images/weather/day/qing.png'
   }
+
+  //只读一次
   componentWillMount () {
     this.username = getItem().username;
     this.title = this.getTitle(this.props);
   }
-
+ // 获取时间
   async componentDidMount () {
-    setInterval ( () => {
+    this.timeId=setInterval ( () => {
       this.setState ({
         sysTime:Date.now()
       })
     },1000);
-    const result = await reqWeather();
-    
+    const { promise, cancel} = reqWeather();
+    this.cencel = cancel;
+    const result = await promise;
     if (result) {
       this.setState(result);
     }
@@ -35,6 +38,13 @@ class HeaderMain extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.title = this.getTitle(nextProps);
+  }
+
+  componentWillUnmount() {
+    // 清除定时器
+    clearInterval(this.timeId);
+    // 取消天气请求
+    this.cencel();
   }
   // 点击登出
   logout = () => {
@@ -50,7 +60,6 @@ class HeaderMain extends Component {
   }
   // 获取 title
   getTitle = (nextProps) => {
-    console.log('getTitle()');
     const { pathname } = nextProps.location;
     for (let i=0; i<menuList.length; i++) {
       const menu = menuList[i];

@@ -33,7 +33,7 @@ export default class Category extends Component {
         }
       }
     ];
-    return (
+    return ( 
       <Card
         title="一级分类列表"
         extra={
@@ -53,6 +53,7 @@ export default class Category extends Component {
           defaultPageSize: 3,
           showQuickJumper: true
          }}
+         rowKey='_id'
          />,
       </Card>
     );

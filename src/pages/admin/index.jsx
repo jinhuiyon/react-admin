@@ -13,25 +13,41 @@ import Pie from '../charts/pie';
 import LeftNav from '../../components/left-nav';
 import HeaderMain from '../../components/header-main';
 import { getItem } from '../../utils/storage-tools';
+import { reqValidateUserInfo } from '../../api/indxe';
 const { Header, Content, Footer, Sider } = Layout;
 export default class Admin extends Component {
     state = {
       collapsed: false,
+      isLoading: true,
+      success: false
     };
   
     onCollapse = collapsed => {
       this.setState({ collapsed });
     };
-    componentWillMount () {
+    async componentWillMount () {
       const user = getItem();
-      if (!user || !user._id) {
-        this.props.history.replace('/login');
+      
+      if (user && user._id) {
+        const result = await reqValidateUserInfo(user._id);
+
+        if (result) {
+          return this.setState({
+            isLoading: false,
+            success: true
+          })
+        }
       }
+
+      this.setState({
+        isLoading: false,
+        success: false
+      })
     }
     render() {
-      const { collapsed } = this.state;
-  
-      return (
+      const { collapsed, isLoading, success } = this.state;
+      if (isLoading) return null;
+      return success ? (
         <Layout style={{ minHeight: '100vh' }}>
           <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
             <LeftNav collapsed={collapsed}/>
@@ -60,6 +76,6 @@ export default class Admin extends Component {
             </Footer>
           </Layout>
         </Layout>
-      );
+      ) : (<Redirect to='/login'/>);
     }
   }
