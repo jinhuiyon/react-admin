@@ -31,3 +31,6 @@ export const reqWeather = function () {
 // 请求品类管理-品类名称数据
 export const reqCategories = (parentId) => ajax('/manage/category/list',{parentId},'GET');
 
+export const reqAddCategory = (parentId, categoryName) => ajax('/manage/category/add', {parentId, categoryName}, 'POST');
+
+export const reqUpdateCategoryName = (categoryId, categoryName) => ajax('/manage/category/update', {categoryId, categoryName}, 'POST');

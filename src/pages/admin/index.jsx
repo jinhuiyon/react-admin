@@ -13,7 +13,7 @@ import Pie from '../charts/pie';
 import LeftNav from '../../components/left-nav';
 import HeaderMain from '../../components/header-main';
 import { getItem } from '../../utils/storage-tools';
-import { reqValidateUserInfo } from '../../api/indxe';
+import { reqValidateUserInfo } from '../../api';
 const { Header, Content, Footer, Sider } = Layout;
 export default class Admin extends Component {
     state = {
@@ -25,6 +25,7 @@ export default class Admin extends Component {
     onCollapse = collapsed => {
       this.setState({ collapsed });
     };
+    
     async componentWillMount () {
       const user = getItem();
       
@@ -32,13 +33,14 @@ export default class Admin extends Component {
         const result = await reqValidateUserInfo(user._id);
 
         if (result) {
+          console.log('111')
           return this.setState({
             isLoading: false,
             success: true
           })
         }
       }
-
+      
       this.setState({
         isLoading: false,
         success: false
@@ -75,7 +77,7 @@ export default class Admin extends Component {
               推荐使用谷歌浏览器，可以获得更佳页面操作体验
             </Footer>
           </Layout>
-        </Layout>
-      ) : (<Redirect to='/login'/>);
+        </Layout> 
+      ) : (<Redirect to='/login' />)
     }
   }

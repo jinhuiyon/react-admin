@@ -3,7 +3,7 @@ import MyButton from "../my-button";
 import { withRouter } from 'react-router-dom';
 import { Modal } from 'antd';
 import { getItem, removeItem } from '../../utils/storage-tools';
-import { reqWeather } from '../../api/indxe'
+import { reqWeather } from '../../api/index'
 import menuList from '../../config/menu-config'
 import dayjs from "dayjs";
 import "./index.less";

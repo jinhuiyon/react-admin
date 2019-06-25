@@ -1,21 +1,21 @@
 import axios from "axios";
 import { message } from "antd";
 
-export default function ajax(url, data, method) {
-  let reqPs = data;
+export default function ajax(url, data = {}, method = 'get') {
+  let reqParams = data;
   method = method.toLowerCase();
   if (method === "get") {
-    reqPs={
+    reqParams={
       params:data
     }
   }
-  return axios[method](url, reqPs)
+  return axios[method](url, reqParams)
     .then(res => {
       const { data } = res;
       if (data.status === 0) {
         return data.data || {};
       } else {
-        message.error('用户不存在', 1);
+        message.error(data.msg, 1);
       }
     })
     .catch(err => {

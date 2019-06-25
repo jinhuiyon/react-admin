@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Icon, Input, Button } from "antd";
-import { reqLogin } from "../../api/indxe";
+import { reqLogin } from "../../api";
 import { setItem } from '../../utils/storage-tools';
 import logo from "../../assets/img/logo.png";
 import "./index.less";
