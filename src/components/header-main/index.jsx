@@ -60,7 +60,11 @@ class HeaderMain extends Component {
   }
   // 获取 title
   getTitle = (nextProps) => {
-    const { pathname } = nextProps.location;
+    let { pathname } = nextProps.location;
+    const pathnameReg = /^\/product\//;
+    if (pathnameReg.test(pathname)) {
+      pathname = pathname.slice(0, 8);
+    }
     for (let i=0; i<menuList.length; i++) {
       const menu = menuList[i];
       if (menu.children) {
