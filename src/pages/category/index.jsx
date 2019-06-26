@@ -27,7 +27,7 @@ export default class Category extends Component {
     this.fetchCategories("0");
   }
 
-  fetchCategories = async (parentId) => {
+  fetchCategories = async parentId => {
     this.setState({
       loading: true
     });
@@ -121,9 +121,9 @@ export default class Category extends Component {
 
   goBack = () => {
     this.setState({
-      isShowSubCategories:false
-    })
-  }
+      isShowSubCategories: false
+    });
+  };
 
   updateCategoryName = () => {
     const { form } = this.updateCategoryNameForm.props;
@@ -138,11 +138,11 @@ export default class Category extends Component {
         if (result) {
           const { parentId } = this.category;
           let categoryData = this.state.categories;
-          let stateName = 'categories';
+          let stateName = "categories";
 
           if (parentId !== 0) {
             categoryData = this.state.subCategories;
-            stateName = 'subCategories'
+            stateName = "subCategories";
           }
           const categories = categoryData.map(category => {
             let { _id, name, parentId } = category;
@@ -212,7 +212,17 @@ export default class Category extends Component {
 
     return (
       <Card
-        title={isShowSubCategories ? <div><MyButton onClick={this.goBack}>一级分类</MyButton><Icon type="arrow-right"/>&nbsp;{this.parentCategory.name}</div> : "一级分类列表"}
+        title={
+          isShowSubCategories ? (
+            <div>
+              <MyButton onClick={this.goBack}>一级分类</MyButton>
+              <Icon type="arrow-right" />
+              &nbsp;{this.parentCategory.name}
+            </div>
+          ) : (
+            "一级分类列表"
+          )
+        }
         extra={
           <Button
             type="primary"
@@ -234,7 +244,7 @@ export default class Category extends Component {
             showQuickJumper: true
           }}
           rowKey="_id"
-          loading = {loading}
+          loading={loading}
         />
 
         <Modal

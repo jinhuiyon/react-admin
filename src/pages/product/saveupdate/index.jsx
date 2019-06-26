@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Card, Icon, Form, Input, Cascader, InputNumber, Button } from "antd";
 import { reqCategories } from "../../../api";
 import "./index.less";
-import RichTextEditor from './rich-text-editor';
+import RichTextEditor from "./rich-text-editor";
 const { Item } = Form;
 
 export default class Saveupdade extends Component {
