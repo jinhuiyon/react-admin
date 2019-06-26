@@ -33,7 +33,6 @@ export default class Admin extends Component {
         const result = await reqValidateUserInfo(user._id);
 
         if (result) {
-          console.log('111')
           return this.setState({
             isLoading: false,
             success: true
