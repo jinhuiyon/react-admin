@@ -11,6 +11,7 @@ export default class Index extends Component {
   }
   async componentWillMount() {
     const result = await reqProducts(1,3);
+    // 数据库没有数据
     console.log(result)
     if (result) {
       this.setState({
@@ -18,8 +19,13 @@ export default class Index extends Component {
       }) 
     }
   }
+  // 跳转到添加产品
+  showAddProduct = () => {
+    this.props.history.push('/product/saveupdate')
+  }
   render() {
     const { products } = this.state;
+    console.log(products)
     const columns = [
       {
         title: '商品名称',
@@ -69,7 +75,7 @@ export default class Index extends Component {
           <Button type="primary">搜索</Button>
         </div>
       }
-      extra = { <Button type="primary"><Icon type="plus" />添加产品</Button> }
+      extra = { <Button type="primary" onClick={this.showAddProduct}><Icon type="plus" />添加产品</Button> }
       >
         <Table 
           columns={columns}
