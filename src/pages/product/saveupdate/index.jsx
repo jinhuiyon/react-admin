@@ -1,15 +1,18 @@
 import React, { Component } from "react";
 import { Card, Icon, Form, Input, Cascader, InputNumber, Button } from "antd";
-import { reqCategories } from "../../../api";
+import { reqCategories, reqAddProduct } from "../../../api";
+import draftToHtml from "draftjs-to-html";
+import { convertToRaw } from "draft-js";
 import "./index.less";
 import RichTextEditor from "./rich-text-editor";
 const { Item } = Form;
 
-export default class Saveupdade extends Component {
+class Saveupdade extends Component {
   state = {
     options: []
   };
-
+  // 获取组件
+  richTextEditorRef = React.createRef();
   async componentDidMount() {
     const result = await reqCategories("0");
 
@@ -25,7 +28,10 @@ export default class Saveupdade extends Component {
       });
     }
   }
-
+  goBack = () => {
+    this.props.history.goBack();
+  };
+  // 加载二级分类
   loadData = async selectedOptions => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
     // 显示loading
@@ -50,9 +56,44 @@ export default class Saveupdade extends Component {
 
   addProduct = e => {
     e.preventDefault();
+
+    this.props.form.validateFields(async (err, values) => {
+      if (!err) {
+        const { editorState } = this.richTextEditorRef.current.state;
+        const detail = draftToHtml(
+          convertToRaw(editorState.getCurrentContent())
+        );
+        const { name, desc, price, categoriesId } = values;
+
+        let pCategoryId = "0";
+        let categoryId = "";
+
+        if (categoriesId.length === 1) {
+          categoryId = categoriesId[0];
+        } else {
+          pCategoryId = categoriesId[0];
+          categoryId = categoriesId[1];
+        }
+        // 发送请求
+        const result = await reqAddProduct({
+          name,
+          desc,
+          price,
+          categoryId,
+          pCategoryId,
+          detail
+        });
+
+        if (result) {
+          // 请求成功返回到index页面
+          this.props.history.push("/product/index");
+        }
+      }
+    });
   };
   render() {
     const { options } = this.state;
+    const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -67,37 +108,53 @@ export default class Saveupdade extends Component {
       <Card
         title={
           <div className="title">
-            <Icon className="arrow-icon" type="arrow-left" />
+            <Icon
+              onClick={this.goBack}
+              className="arrow-icon"
+              type="arrow-left"
+            />
             添加商品
           </div>
         }
       >
         <Form {...formItemLayout} onSubmit={this.addProduct}>
           <Item label="商品名称">
-            <Input placeholder="请输入商品名称" />
+            {getFieldDecorator("name", {
+              rules: [{ required: true, message: "请输入商品名称" }]
+            })(<Input placeholder="请输入商品名称" />)}
           </Item>
           <Item label="商品描述">
-            <Input placeholder="请输入商品描述" />
+            {getFieldDecorator("desc", {
+              rules: [{ required: true, message: "请输入商品描述" }]
+            })(<Input placeholder="请输入商品描述" />)}
           </Item>
           <Item label="商品分类" wrapperCol={{ span: 5 }}>
-            <Cascader
-              placeholder="请选择分类"
-              options={options}
-              loadData={this.loadData}
-              changeOnSelect
-            />
+            {getFieldDecorator("categoriesId", {
+              rules: [{ required: true, message: "请选择分类" }]
+            })(
+              <Cascader
+                placeholder="请选择分类"
+                options={options}
+                loadData={this.loadData}
+                changeOnSelect
+              />
+            )}
           </Item>
           <Item label="商品价格">
-            <InputNumber
-              formatter={value =>
-                `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-              }
-              parser={value => value.replace(/￥\s?|(,*)/g, "")}
-              className="input-number"
-            />
+            {getFieldDecorator("price", {
+              rules: [{ required: true, message: "请输入商品价格" }]
+            })(
+              <InputNumber
+                formatter={value =>
+                  `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                parser={value => value.replace(/￥\s?|(,*)/g, "")}
+                className="input-number"
+              />
+            )}
           </Item>
           <Item label="商品详情" wrapperCol={{ span: 20 }}>
-            <RichTextEditor />
+            <RichTextEditor ref={this.richTextEditorRef} />
           </Item>
           <Item>
             <Button
@@ -113,3 +170,5 @@ export default class Saveupdade extends Component {
     );
   }
 }
+
+export default Form.create()(Saveupdade);
