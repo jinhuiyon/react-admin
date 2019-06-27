@@ -7,25 +7,33 @@ import "./index.less";
 const { Option } = Select;
 export default class Index extends Component {
   state = {
-    products:[]
+    products:[],
+    total:0,
+    loading:true
   }
-  async componentWillMount() {
-    const result = await reqProducts(1,3);
-    // 数据库没有数据
-    console.log(result)
+  // 复用请求
+  getProducts = async (pageNum, pageSize) => {
+    this.setState({
+      loading:true
+    })
+    const result = await reqProducts(pageNum, pageSize);
     if (result) {
       this.setState({
-        products:result.list
+        products:result.list,
+        total:result.total,
+        loading:false
       }) 
     }
+  }
+  async componentWillMount() {
+    this.getProducts(1, 3);
   }
   // 跳转到添加产品
   showAddProduct = () => {
     this.props.history.push('/product/saveupdate')
   }
   render() {
-    const { products } = this.state;
-    console.log(products)
+    const { products, total, loading } = this.state;
     const columns = [
       {
         title: '商品名称',
@@ -85,8 +93,14 @@ export default class Index extends Component {
             showQuickJumper: true,
             showSizeChanger: true,
             pageSizeOptions: ['3', '6', '9', '12'],
-            defaultPageSize: 3
+            defaultPageSize: 3,
+            total,
+            onChange: this.getProducts,
+            onShowSizeChange: this.getProducts,
+            
           }}
+          loading = {loading}
+          rowKey='_id'
         /> 
       </Card>
     );
