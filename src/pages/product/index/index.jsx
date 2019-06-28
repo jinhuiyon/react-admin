@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Card, Button, Icon, Table, Select, Input, message } from "antd";
 import MyButton from "../../../components/my-button";
-import { reqProducts, reqSearchProduct } from "../../../api";
+import { reqProducts, reqSearchProduct, reqUpdateProductStatus } from "../../../api";
 import "./index.less";
 
 const { Option } = Select;
@@ -82,6 +82,26 @@ export default class Index extends Component {
       message.warn('请输入搜索内容',2)
     }
   }
+  // 上下架功能
+  updateProductStatus = (product) => {
+    return async () => {
+      const status = 3 - product.status;
+      const productId = product._id;
+
+      const result = await reqUpdateProductStatus(productId,status);
+      if (result) {
+        this.setState({
+          products: this.state.products.map((product)=>{
+            if (product._id === productId) {
+              return {...product,status};
+            }
+            return product;
+          })
+        })
+        message.success('更新商品状态成功',1);
+      }
+    }
+  }
   render() {
     const { products, total, loading } = this.state;
     const columns = [
@@ -100,11 +120,11 @@ export default class Index extends Component {
       {
         className: 'product-status',
         title: '状态',
-        dataIndex: 'status',
-        render: (status) => {
-          return status === 1
-            ? <div><Button type="primary">上架</Button> &nbsp;&nbsp;&nbsp;&nbsp;已下架</div>
-            : <div><Button type="primary">下架</Button> &nbsp;&nbsp;&nbsp;&nbsp;在售</div>
+        // dataIndex: 'status',
+        render: (product) => {
+          return product.status === 1
+            ? <div><Button type="primary" onClick={this.updateProductStatus(product)}>上架</Button> &nbsp;&nbsp;&nbsp;&nbsp;已下架</div>
+            : <div><Button type="primary" onClick={this.updateProductStatus(product)}>下架</Button> &nbsp;&nbsp;&nbsp;&nbsp;在售</div>
         }
       },
       {

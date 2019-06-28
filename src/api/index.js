@@ -45,3 +45,5 @@ export const reqDeleteProductImg = (name, id) => ajax('/manage/img/delete', {nam
 
 // 搜索
 export const reqSearchProduct = ({searchType, searchContent, pageSize, pageNum}) => ajax('/manage/product/search', {[searchType]: searchContent, pageSize, pageNum});
+// 上下架
+export const reqUpdateProductStatus = (productId,status) => ajax('/manage/product/updateStatus',{productId,status},'POST')
