@@ -48,14 +48,14 @@ class Saveupdade extends Component {
     }
   };
   async componentDidMount() {
-    this.getCategories('0');
+    this.getCategories("0");
 
     const product = this.props.location.state;
 
     let categoriesId = [];
     // 判断是否有传参
     if (product) {
-      if(product.pCategoryId !=='0') {
+      if (product.pCategoryId !== "0") {
         categoriesId.push(product.pCategoryId);
       }
       categoriesId.push(product.categoryId);
@@ -125,7 +125,7 @@ class Saveupdade extends Component {
 
         if (result) {
           // 请求成功 返回index页面
-          this.props.history.push('/product/index');
+          this.props.history.push("/product/index");
         }
       }
     });
@@ -162,13 +162,13 @@ class Saveupdade extends Component {
           <Item label="商品名称">
             {getFieldDecorator("name", {
               rules: [{ required: true, message: "请输入商品名称" }],
-              initialValue: product ? product.name : ''
+              initialValue: product ? product.name : ""
             })(<Input placeholder="请输入商品名称" />)}
           </Item>
           <Item label="商品描述">
             {getFieldDecorator("desc", {
               rules: [{ required: true, message: "请输入商品描述" }],
-              initialValue: product ? product.desc : ''
+              initialValue: product ? product.desc : ""
             })(<Input placeholder="请输入商品描述" />)}
           </Item>
           <Item label="商品分类" wrapperCol={{ span: 5 }}>
@@ -187,7 +187,7 @@ class Saveupdade extends Component {
           <Item label="商品价格">
             {getFieldDecorator("price", {
               rules: [{ required: true, message: "请输入商品价格" }],
-              initialValue: product ? product.price : ''
+              initialValue: product ? product.price : ""
             })(
               <InputNumber
                 formatter={value =>
@@ -198,9 +198,15 @@ class Saveupdade extends Component {
               />
             )}
           </Item>
-          <Item label="商品图片" >
-            <PictureWall imgs={product ? product.imgs : []} id={product ? product._id : ''}/>
-          </Item>
+          {product ? (
+            <Item label="商品图片">
+              <PictureWall
+                imgs={product ? product.imgs : []}
+                id={product ? product._id : ""}
+              />
+            </Item>
+          ) : null}
+
           <Item label="商品详情" wrapperCol={{ span: 20 }}>
             <RichTextEditor ref={this.richTextEditorRef} />
           </Item>

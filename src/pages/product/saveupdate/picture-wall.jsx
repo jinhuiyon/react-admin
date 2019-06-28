@@ -30,6 +30,8 @@ export default class PicturesWall extends Component {
       // 上传中
     } else if (file.status === "done") {
       // 上传成功
+      fileList[fileList.length-1].name = file.response.data.name;
+      fileList[fileList.length-1].url = file.response.data.url;
       message.success("上传图片成功", 2);
     } else if (file.status === "error") {
       // 上传失败
