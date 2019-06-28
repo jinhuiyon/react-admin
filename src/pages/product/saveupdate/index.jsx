@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { Card, Icon, Form, Input, Cascader, InputNumber, Button } from "antd";
-import { reqCategories, reqAddProduct } from "../../../api";
+import { reqCategories, reqAddProduct, reqUpdateProduct } from "../../../api";
 import draftToHtml from "draftjs-to-html";
 import { convertToRaw } from "draft-js";
 import "./index.less";
 import RichTextEditor from "./rich-text-editor";
+import PictureWall from "./picture-wall";
 const { Item } = Form;
 
 class Saveupdade extends Component {
@@ -13,20 +14,54 @@ class Saveupdade extends Component {
   };
   // 获取组件
   richTextEditorRef = React.createRef();
-  async componentDidMount() {
-    const result = await reqCategories("0");
+
+  getCategories = async parentId => {
+    const result = await reqCategories(parentId);
 
     if (result) {
-      this.setState({
-        options: result.map(item => {
-          return {
-            value: item._id,
-            label: item.name,
-            isLeaf: false
-          };
-        })
-      });
+      // 判断如果为2级分类
+      if (parentId === "0") {
+        this.setState({
+          options: result.map(item => {
+            return {
+              value: item._id,
+              label: item.name,
+              isLeaf: false
+            };
+          })
+        });
+      } else {
+        this.setState({
+          options: this.state.options.map(item => {
+            if (item.value === parentId) {
+              item.children = result.map(item => {
+                return {
+                  value: item._id,
+                  label: item.name
+                };
+              });
+            }
+            return item;
+          })
+        });
+      }
     }
+  };
+  async componentDidMount() {
+    this.getCategories('0');
+
+    const product = this.props.location.state;
+
+    let categoriesId = [];
+    // 判断是否有传参
+    if (product) {
+      if(product.pCategoryId !=='0') {
+        categoriesId.push(product.pCategoryId);
+      }
+      categoriesId.push(product.categoryId);
+    }
+
+    this.categoriesId = categoriesId;
   }
   goBack = () => {
     this.props.history.goBack();
@@ -74,19 +109,23 @@ class Saveupdade extends Component {
           pCategoryId = categoriesId[0];
           categoryId = categoriesId[1];
         }
+
+        let promise = null;
+        const product = this.props.location.state;
+        const options = { name, desc, price, categoryId, pCategoryId, detail };
         // 发送请求
-        const result = await reqAddProduct({
-          name,
-          desc,
-          price,
-          categoryId,
-          pCategoryId,
-          detail
-        });
+        if (product) {
+          options._id = product._id;
+          promise = reqUpdateProduct(options);
+        } else {
+          promise = reqAddProduct(options);
+        }
+
+        const result = await promise;
 
         if (result) {
-          // 请求成功返回到index页面
-          this.props.history.push("/product/index");
+          // 请求成功 返回index页面
+          this.props.history.push('/product/index');
         }
       }
     });
@@ -94,6 +133,8 @@ class Saveupdade extends Component {
   render() {
     const { options } = this.state;
     const { getFieldDecorator } = this.props.form;
+    // 添加页面值位undefined，修改产品页面，值为对象
+    const product = this.props.location.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -120,17 +161,20 @@ class Saveupdade extends Component {
         <Form {...formItemLayout} onSubmit={this.addProduct}>
           <Item label="商品名称">
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: "请输入商品名称" }]
+              rules: [{ required: true, message: "请输入商品名称" }],
+              initialValue: product ? product.name : ''
             })(<Input placeholder="请输入商品名称" />)}
           </Item>
           <Item label="商品描述">
             {getFieldDecorator("desc", {
-              rules: [{ required: true, message: "请输入商品描述" }]
+              rules: [{ required: true, message: "请输入商品描述" }],
+              initialValue: product ? product.desc : ''
             })(<Input placeholder="请输入商品描述" />)}
           </Item>
           <Item label="商品分类" wrapperCol={{ span: 5 }}>
             {getFieldDecorator("categoriesId", {
-              rules: [{ required: true, message: "请选择分类" }]
+              rules: [{ required: true, message: "请选择分类" }],
+              initialValue: this.categoriesId
             })(
               <Cascader
                 placeholder="请选择分类"
@@ -142,7 +186,8 @@ class Saveupdade extends Component {
           </Item>
           <Item label="商品价格">
             {getFieldDecorator("price", {
-              rules: [{ required: true, message: "请输入商品价格" }]
+              rules: [{ required: true, message: "请输入商品价格" }],
+              initialValue: product ? product.price : ''
             })(
               <InputNumber
                 formatter={value =>
@@ -152,6 +197,9 @@ class Saveupdade extends Component {
                 className="input-number"
               />
             )}
+          </Item>
+          <Item label="商品图片" >
+            <PictureWall imgs={product ? product.imgs : []} id={product ? product._id : ''}/>
           </Item>
           <Item label="商品详情" wrapperCol={{ span: 20 }}>
             <RichTextEditor ref={this.richTextEditorRef} />

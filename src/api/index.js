@@ -36,5 +36,9 @@ export const reqAddCategory = (parentId, categoryName) => ajax('/manage/category
 export const reqUpdateCategoryName = (categoryId, categoryName) => ajax('/manage/category/update', {categoryId, categoryName}, 'POST');
 
 export const reqProducts = (pageNum, pageSize) => ajax('/manage/product/list', {pageNum, pageSize});
-
+// 添加
 export const reqAddProduct = ({name, desc, price, categoryId, pCategoryId, detail}) => ajax('/manage/product/add', {name, desc, price, categoryId, pCategoryId, detail},'POST');
+// 修改
+export const reqUpdateProduct = ({name, desc, price, categoryId, pCategoryId, detail, _id}) => ajax('/manage/product/update', {name, desc, price, categoryId, pCategoryId, detail, _id}, 'POST');
+// 图片
+export const reqDeleteProductImg = (name, id) => ajax('/manage/img/delete', {name, id}, 'POST');

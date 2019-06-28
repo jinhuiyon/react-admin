@@ -28,6 +28,12 @@ export default class Index extends Component {
   async componentWillMount() {
     this.getProducts(1, 3);
   }
+
+  showUpdateProduct = (product) => {
+    return () => {
+      this.props.history.push('/product/saveupdate',product); //第二个参数可以传数据
+    }
+  } 
   // 跳转到添加产品
   showAddProduct = () => {
     this.props.history.push('/product/saveupdate')
@@ -63,7 +69,7 @@ export default class Index extends Component {
         render: (product) => {
           return <div>
             <MyButton>详情</MyButton>
-            <MyButton>修改</MyButton>
+            <MyButton onClick={this.showUpdateProduct(product)}>修改</MyButton>
           </div>
         }
       },
